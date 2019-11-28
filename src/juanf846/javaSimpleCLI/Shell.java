@@ -13,11 +13,11 @@ import java.util.Scanner;
 import juanf846.javaSimpleCLI.annotations.*;
 
 /**
- * Esta clase crea una interfaz de linea de comandos simple. Este no puede ejecutar comandos del 
- * sistema operativo, solo puede ejecutar los comandos que se le agregan con la funcion {@link #addCommand(Object)}.<br/>
- * Una vez instanciado, se puede cambiar el prompt ({@link #setPrompt(String)}), el input ({@link #setInputStream(InputStream)}) 
- * o el output ({@link #setOutputStream(OutputStream)}). <br/>
- * Para iniciar la consola, use la funcion {@link #run()}
+ * This class creates a Simple CLI. Can't run S.O. commands, only can run commands added with {@link #addCommand(Object)} 
+ * method.<br/> 
+ * You can change the prompt with {@link #setPrompt(String)}, the input with {@link #setInputStream(InputStream)} or 
+ * the output with {@link #setOutputStream(OutputStream)}. <br/>
+ * Start the CLI with {@link #run()}.
  * 
  * @author juanf846
  *
@@ -32,30 +32,34 @@ public class Shell {
 	private boolean stop = false;
 	
 	/**
-	 * Cambia el prompt de la consola
-	 * @param prompt
+	 * Changes the prompt.
+	 * 
+	 * @param prompt A new prompt String.
+	 * @throws IllegalArgumentException if <code>prompt</code> is null.
 	 */
 	public void setPrompt(String prompt) {
-		if(prompt==null)prompt="";
+		if(prompt==null)throw new IllegalArgumentException(new NullPointerException());
 		this.prompt=prompt;
 	}
 	
 	/**
-	 * Cambia el InputStream del shell, por defecto es <code>System.in</code>.
-	 * Si se envia <code>null</code> se establece el valor por defecto
-	 * @param input
+	 * Changes the InputStream, by default is <code>System.in</code>. 
+	 * 
+	 * @param input A new InputStream.
+	 * @throws IllegalArgumentException if <code>input</code> is null.
 	 */
 	public void setInputStream(InputStream input) {
-		if(input==null)input=System.in;
+		if(input==null)throw new IllegalArgumentException(new NullPointerException());
 		this.scan=new Scanner(input);
 	}
 	/**
-	 * Cambia el OutputStream del shell, por defecto es <code>System.out</code>.
-	 * Si se envia <code>null</code> se establece el valor por defecto
-	 * @param output
+	 * Changes the OutputStream, by default is <code>System.out</code>. 
+	 * 
+	 * @param output A new OutputStream.
+	 * @throws IllegalArgumentException if <code>output</code> is null.
 	 */
 	public void setOutputStream(OutputStream output) {
-		if(output==null)output=System.out;
+		if(output==null)throw new IllegalArgumentException(new NullPointerException());
 		this.output=new PrintStream(output);
 	}
 	
@@ -65,24 +69,24 @@ public class Shell {
 	}
 	
 	/**
-	 * Agrega un comando al shell.
-	 * Para que una clase sea valida debe tener lo siguiente:
+	 * Add a command.</br></br>
+	 * A class is valid if it have:
 	 * <ul>
-	 * <li>La anotacion {@link Command} en su clase</li>
-	 * <li>Un metodo anotado con la anotacion {@link Run} la cual debe recibir un parametro de tipo 
-	 * {@link String[]} y no debe devolver nada</li> 
+	 * 	<li>A {@link Command} annotation in its class.</li>
+	 *  <li>A method with {@link Run} annotation, it must have a parameter {@link String[]} and must 
+	 * not return anything.</li>
 	 * </ul>
-	 * Opcionalmente tambien puede tener:
+	 * If these conditions aren't met, a {@link RuntimeException} will be throw.</br></br>
+	 * 
+	 * Optionally can have:
 	 * <ul>
-	 * <li>Una variable de tipo {@link PrintStream} con la anotacion {@link Input}</li>
-	 * <li>Una variable de tipo {@link Scanner} con la anotacion {@link Output}</li>
-	 * <li>Un metodo anotado con la anotacion {@link Help} la cual no debe recibir parametros y debe 
-	 * devolver un String</li> 
+	 * 	<li>A {@link PrintStream} field with {@link Input} annotation.</li>
+	 * 	<li>A {@link Scanner} field with {@link Output} annotation.</li>
+	 *  <li>A method with {@link Help} annotation, it must not have parameters and must return a {@link String}.</li>
 	 * </ul>
 	 * 
-	 * Si no cumple con las condiciones obligatorias, se lanza una RuntimeException
-	 * 
-	 * @param obj Un objeto de cualquier tipo que cumpla con las condiciones
+	 * @param obj An object that meets the conditions
+	 * @throws RuntimeException If conditions aren't met
 	 * 
 	 */
 	public void addCommand(Object obj){
@@ -144,7 +148,7 @@ public class Shell {
 	
 	
 	/**
-	 * Inicia la ejecucion del shell.
+	 * Starts the shell.
 	 */
 	public void run() {
 		stop = false;
@@ -160,19 +164,24 @@ public class Shell {
 				try {
 					c.methodRun.invoke(c.obj, (Object)args.toArray(new String[args.size()]));
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					scan.close();
 					throw new RuntimeException(e);
+				} catch(Exception e) {
+					e.printStackTrace(output);
+					
 				}
 			}else {
 				output.println("Command not found: "+command);
 			}
 		}
+		scan.close();
 	}
 	
 	/**
-	 * Separa el texto usando los espacios, si el texto está entre comillas ignora los espacios.
+	 * Splits the text in parameters.
 	 * 
 	 * @param text
-	 * @return
+	 * @return A List with parameters.
 	 */
 	private List<String> splitText(String text){
 		boolean comando = false;
@@ -216,9 +225,10 @@ public class Shell {
 	}
 	
 	/**
-	 * Busca un comando en la lista de comandos y lo devuelve, si no lo encuentra devuelve null
+	 * Search a command.
+	 *
 	 * @param command
-	 * @return 
+	 * @return If found a {@link CommandData}, if not found <code>null</code>.
 	 */
 	CommandData findCommand(String command) {
 		for(CommandData c : commands) {
@@ -230,7 +240,7 @@ public class Shell {
 	}
 	
 	/**
-	 * Detiene la ejecucion del shell, el shell se detendra despues de ejecutar un comando
+	 * Stops the shell.
 	 */
 	public void stop() {
 		stop=true;
@@ -238,7 +248,7 @@ public class Shell {
 	
 	
 	/**
-	 * Este comando muestra la ayuda de otros comandos
+	 * This command shows the help of another command
 	 * @author JuanF
 	 *
 	 */
@@ -277,7 +287,7 @@ public class Shell {
 	}
 	
 	/**
-	 * Este comando termina la ejecucion actual del shell
+	 * This command stops the shell
 	 * @author JuanF
 	 *
 	 */
