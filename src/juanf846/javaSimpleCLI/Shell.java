@@ -12,6 +12,11 @@ import java.util.Scanner;
 
 import juanf846.javaSimpleCLI.annotations.*;
 
+/* TODO remove command
+ * TODO is shell case sensitive? option
+ * TODO commands duplication 
+ */
+
 /**
  * This class creates a Simple CLI. Can't run S.O. commands, only can run commands added with {@link #addCommand(Object)} 
  * method.<br/> 
@@ -152,6 +157,7 @@ public class Shell {
 	 */
 	public void run() {
 		stop = false;
+		output.println("Type 'help' for a list of commands");
 		while(!stop) {
 			output.print(prompt);
 			String text = scan.nextLine().trim();
@@ -281,8 +287,14 @@ public class Shell {
 		
 		@Help
 		public String getHelp() {
-			return "This command shows the help of another command\n"
-					+ "HELP command";
+			String out = "This command shows the help of another command\n"
+					+ "Usage: HELP command\n\n"
+					+ "Available commands: \n";
+			for(CommandData c : commands) {
+				out += c.name + "\n";
+			}
+			
+			return out;
 		}
 	}
 	
