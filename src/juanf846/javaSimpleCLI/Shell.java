@@ -123,14 +123,18 @@ public class Shell {
 			throw new RuntimeException("method Run() not found in: "+clas.getName());
 		//Inyecta los recursos
 		try {
-			commandData.input.setAccessible(true);
-			commandData.input.set(commandData.obj, scan);
+			if(commandData.input != null) {
+				commandData.input.setAccessible(true);
+				commandData.input.set(commandData.obj, scan);
+			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
 		try {
-			commandData.output.setAccessible(true);
-			commandData.output.set(commandData.obj, output);
+			if(commandData.output != null) {
+				commandData.output.setAccessible(true);
+				commandData.output.set(commandData.obj, output);
+			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
@@ -267,7 +271,8 @@ public class Shell {
 		
 		@Help
 		public String getHelp() {
-			return "(comando help contenido)";
+			return "This command shows the help of another command\n"
+					+ "HELP command";
 		}
 	}
 	
