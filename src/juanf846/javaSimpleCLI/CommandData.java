@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Esta clase es utilizada internamente para guardar informacion de los comandos disponibles
+ * This class saves the information of a command.
  *
  * @author juanf846
  *
