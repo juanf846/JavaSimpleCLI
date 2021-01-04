@@ -12,3 +12,10 @@ Con JavaSimpleCLI podes crear una interfaz de linea de comandos simple.
 * Crea un metodo que no devuelva nada, reciba un <code>String[]</code> como parametro y tenga la anotacion <code>@Run</code>. 
 Aquí agregá la logica.
 * Agrega el comando al Shell mediante el metodo <code>addCommand(Object)</code>.
+
+## TODO
+* quitar Command del Shell
+* opcion para que el Shell sea Case sensitive/insensitive
+* Command duplicados
+* metodo para ejecutar comandos sin el uso del InputStream
+* cargar los paquetes dentro de un comando
