@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import juanf846.javaSimpleCLI.Shell;
 
 /**
- * Un metodo anotado con {@link Help} ser· invocado cuando el usuario escriba
+ * Un metodo anotado con {@link Help} ser√° invocado cuando el usuario escriba
  * <code>help nombreComando</code> en el shell, este metodo debe devolver un
  * String el cual se imprime en el shell.
  *

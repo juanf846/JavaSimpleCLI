@@ -10,7 +10,7 @@ import juanf846.javaSimpleCLI.Shell;
 /**
  * Una clase debe ser anotada con esta anotacion para que sea considerada un
  * comando valido. {@link #name()} es el nombre del comando, el comando se
- * ejecutar· si el usuario escribe este nombre en el shell.
+ * ejecutar√° si el usuario escribe este nombre en el shell.
  *
  * @see Shell#addCommand(Object)
  * @author juanf846

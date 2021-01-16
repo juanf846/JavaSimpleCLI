@@ -17,6 +17,5 @@ Aquí agregá la logica.
 * quitar Command del Shell
 * opcion para que el Shell sea Case sensitive/insensitive
 * Command duplicados
-* metodo para ejecutar comandos sin el uso del InputStream
 * multiples InputStream
-* cargar los paquetes dentro de un comando
+* cargar los comandos dentro de un paquete

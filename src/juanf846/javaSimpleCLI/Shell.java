@@ -1,5 +1,6 @@
 package juanf846.javaSimpleCLI;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -10,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import juanf846.javaSimpleCLI.annotations.*;
+import juanf846.javaSimpleCLI.annotations.Command;
+import juanf846.javaSimpleCLI.annotations.Help;
+import juanf846.javaSimpleCLI.annotations.Input;
+import juanf846.javaSimpleCLI.annotations.Output;
+import juanf846.javaSimpleCLI.annotations.Run;
 
 /* TODO remove command
  * TODO is shell case sensitive? option
@@ -28,10 +33,14 @@ import juanf846.javaSimpleCLI.annotations.*;
  *
  */
 public class Shell {
+	private static final PrintStream voidOutput = new VoidOutputStream();
+	
 	private List<CommandData> commands = new ArrayList<>();
 	
 	private PrintStream output = System.out;
-	private Scanner scan = new Scanner(System.in);
+	private InputStream input = System.in;
+	private Scanner scan = new Scanner(input);
+	
 	
 	private String prompt = ">";
 	private boolean stop = false;
@@ -160,27 +169,54 @@ public class Shell {
 		output.println("Type 'help' for a list of commands");
 		while(!stop) {
 			output.print(prompt);
+			
 			String text = scan.nextLine().trim();
 			
-			List<String> args = splitText(text);
-			String command = args.remove(0);
-			
-			CommandData c = findCommand(command);
-			if(c!=null) {
-				try {
-					c.methodRun.invoke(c.obj, (Object)args.toArray(new String[args.size()]));
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					scan.close();
-					throw new RuntimeException(e);
-				} catch(Exception e) {
-					e.printStackTrace(output);
-					
-				}
-			}else {
-				output.println("Command not found: "+command);
-			}
+			runCommand(text, false, true, null);
 		}
 		scan.close();
+	}
+	
+	/**
+	 * Procesa una linea y ejecuta el comando.
+	 * 
+	 * @param input Linea a procesar
+	 * @param printInput Si este parametro es true, se imprime el comando ejecutado en el output.
+	 * @param printOutput Si este parametro es true, se imprime la salida del comando en el output.
+	 * @param output Si este parametro es diferente de null, se imprimirá la salida del comando en este output. 
+	 */
+	public void runCommand(String input, boolean printInput, boolean printOutput, PrintStream output) {
+		List<String> args = splitText(input);
+		String command = args.remove(0);
+
+		
+		CommandData c = findCommand(command);
+		if(c!=null) {
+			try {
+				if(printOutput) {
+					if(output != null) {
+						c.output.set(c.obj, output);
+					}else {
+						c.output.set(c.obj, this.output);
+					}
+				}else {
+					c.output.set(c.obj, voidOutput);
+				}
+				if(printInput) {
+					((PrintStream)c.output.get(c.obj)).println(">"+input);
+				}
+					
+				c.methodRun.invoke(c.obj, (Object)args.toArray(new String[args.size()]));
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				scan.close();
+				throw new RuntimeException(e);
+			} catch(Exception e) {
+				e.printStackTrace(output);
+			}
+		}else {
+			if(printOutput)
+				output.println("Command not found: "+command);
+		}
 	}
 	
 	/**
@@ -320,6 +356,15 @@ public class Shell {
 		@Help
 		public String getHelp() {
 			return "This command stops the shell";
+		}
+	}
+	
+	static class VoidOutputStream extends PrintStream{
+		public VoidOutputStream() {
+			super(new OutputStream() {
+				@Override
+				public void write(int b) throws IOException {}
+			});
 		}
 	}
 }

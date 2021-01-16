@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import juanf846.javaSimpleCLI.Shell;
 
 /**
- * Un metodo anotado con {@link Run} ser· invocado cuando el usuario escriba el
+ * Un metodo anotado con {@link Run} ser√° invocado cuando el usuario escriba el
  * nombre del comando en la anotacion {@link Command} en el shell. Este metodo
  * no debe devolver nada y debe recibir un {@code String[]} como parametro.
  *
